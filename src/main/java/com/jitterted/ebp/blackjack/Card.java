@@ -5,10 +5,10 @@ import org.fusesource.jansi.Ansi;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Card {
-    private final String suit;
+    private final Suit suit;
     private final String rank;
 
-    public Card(String suit, String rank) {
+    public Card(Suit suit, String rank) {
         this.suit = suit;
         this.rank = rank;
     }
@@ -36,12 +36,12 @@ public class Card {
         lines[0] = "┌─────────┐";
         lines[1] = String.format("│%s%s       │", rank, gapForRankSize());
         lines[2] = "│         │";
-        lines[3] = String.format("│    %s    │", suit);
+        lines[3] = String.format("│    %s    │", suit.symbol());
         lines[4] = "│         │";
         lines[5] = String.format("│       %s%s│", gapForRankSize(), rank);
         lines[6] = "└─────────┘";
 
-        return cardRepresentation(lines, suit);
+        return cardRepresentation(lines, suit.symbol());
     }
 
     private static String cardRepresentation(String[] lines, String suit) {
