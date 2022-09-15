@@ -3,7 +3,6 @@ package com.jitterted.ebp.blackjack;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,27 +18,40 @@ public class Game {
     private final List<Card> playerHand = new ArrayList<>();
 
     public static void main(String[] args) {
-        Game game = new Game();
+        initializeScreen();
 
-        AnsiConsole.systemInstall();
-        System.out.println(ansi()
-                                   .bgBright(Ansi.Color.WHITE)
-                                   .eraseScreen()
-                                   .cursor(1, 1)
-                                   .fgGreen().a("Welcome to")
-                                   .fgRed().a(" JitterTed's")
-                                   .fgBlack().a(" BlackJack game"));
-        System.out.println(ansi()
-                                   .cursor(3, 1)
-                                   .fgBrightBlack().a("Hit [ENTER] to start..."));
-
-        System.console().readLine();
-
-
-        game.initialDeal();
-        game.play();
+        dealAndPlay();
 
         System.out.println(ansi().reset());
+    }
+
+    private static void dealAndPlay() {
+        Game game = new Game();
+        System.console().readLine();
+        game.initialDeal();
+        game.play();
+    }
+
+    private static void initializeScreen() {
+        AnsiConsole.systemInstall();
+        wellcomeMsg();
+        waitForUser();
+    }
+
+    private static void waitForUser() {
+        System.out.println(ansi()
+                           .cursor(3, 1)
+                           .fgBrightBlack().a("Hit [ENTER] to start..."));
+    }
+
+    private static void wellcomeMsg() {
+        System.out.println(ansi()
+                            .bgBright(Ansi.Color.WHITE)
+                            .eraseScreen()
+                            .cursor(1, 1)
+                            .fgGreen().a("Welcome to")
+                            .fgRed().a(" JitterTed's")
+                            .fgBlack().a(" BlackJack game"));
     }
 
     public Game() {
@@ -49,42 +61,58 @@ public class Game {
     public void initialDeal() {
 
         // deal first round of cards, players first
-        playerHand.add(deck.draw());
-        dealerHand.add(deck.draw());
+        dealPlayerAndDealer();
 
         // deal next round of cards
+        dealPlayerAndDealer();
+    }
+
+    private void dealPlayerAndDealer() {
         playerHand.add(deck.draw());
         dealerHand.add(deck.draw());
     }
 
     public void play() {
-        // get Player's decision: hit until they stand, then they're done (or they go bust)
         boolean playerBusted = false;
+        playerBusted = playerPlays(playerBusted);
+        dealerPlays(playerBusted);
+        gameResult(playerBusted);
+    }
+
+    private boolean playerPlays(boolean playerBusted) {
+        // get Player's decision: hit until they stand, then they're done (or they go bust)
         while (!playerBusted) {
             displayGameState();
             String playerChoice = inputFromPlayer().toLowerCase();
-            if (playerChoice.startsWith("s")) {
+            if (playerStands(playerChoice)) {
                 break;
             }
-            if (playerChoice.startsWith("h")) {
-                playerHand.add(deck.draw());
-                if (handValueOf(playerHand) > 21) {
-                    playerBusted = true;
-                }
+            if (playerHits(playerChoice)) {
+                playerBusted = playerHitResult(playerBusted);
             } else {
                 System.out.println("You need to [H]it or [S]tand");
             }
         }
+        return playerBusted;
+    }
 
-        // Dealer makes its choice automatically based on a simple heuristic (<=16, hit, 17>=stand)
-        if (!playerBusted) {
-            while (handValueOf(dealerHand) <= 16) {
-                dealerHand.add(deck.draw());
-            }
+    private boolean playerHitResult(boolean playerBusted) {
+        playerHand.add(deck.draw());
+        if (handValueOf(playerHand) > 21) {
+            playerBusted = true;
         }
+        return playerBusted;
+    }
 
-        displayFinalGameState();
+    private static boolean playerHits(String playerChoice) {
+        return playerChoice.startsWith("h");
+    }
 
+    private static boolean playerStands(String playerChoice) {
+        return playerChoice.startsWith("s");
+    }
+
+    private void gameResult(boolean playerBusted) {
         if (playerBusted) {
             System.out.println("You Busted, so you lose.  💸");
         } else if (handValueOf(dealerHand) > 21) {
@@ -96,6 +124,17 @@ public class Game {
         } else {
             System.out.println("You lost to the Dealer. 💸");
         }
+    }
+
+    private void dealerPlays(boolean playerBusted) {
+        // Dealer makes its choice automatically based on a simple heuristic (<=16, hit, 17>=stand)
+        if (!playerBusted) {
+            while (handValueOf(dealerHand) <= 16) {
+                dealerHand.add(deck.draw());
+            }
+        }
+
+        displayFinalGameState();
     }
 
     public int handValueOf(List<Card> hand) {
