@@ -1,21 +1,25 @@
 package com.jitterted.ebp.blackjack;
 
-import java.util.List;
-
 public enum Suit {
-    HEARTS("♥"),
-    CLUBS("♣"),
-    SPADES("♠"),
-    DIAMONDS("♦")
+    HEARTS("♥", "RED"),
+    CLUBS("♣", "BLACK"),
+    SPADES("♠", "BLACK"),
+    DIAMONDS("♦", "RED")
     ;
 
     private String symbol;
+    private String color;
 
-    Suit(String symbol) {
+    Suit(String symbol, String color) {
         this.symbol = symbol;
+        this.color = color;
     }
 
     public String symbol() {
         return symbol;
+    }
+
+    public boolean isRed() {
+        return color.equals("RED");
     }
 }

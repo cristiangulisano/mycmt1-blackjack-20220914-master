@@ -41,11 +41,13 @@ public class Card {
         lines[5] = String.format("│       %s%s│", gapForRankSize(), rank);
         lines[6] = "└─────────┘";
 
-        return cardRepresentation(lines, suit.symbol());
+        return cardRepresentation(lines, suit);
     }
 
-    private static String cardRepresentation(String[] lines, String suit) {
-        Ansi.Color cardColor = determineCardColor(suit);
+    private static String cardRepresentation(String[] lines, Suit suit) {
+        Ansi.Color cardColor = suit.isRed()
+                ? Ansi.Color.RED
+                : Ansi.Color.BLACK;
         return ansi()
                 .fg(cardColor).toString()
                 + String.join(ansi().cursorDown(1)
@@ -53,9 +55,6 @@ public class Card {
                                     .toString(), lines);
     }
 
-    private static Ansi.Color determineCardColor(String suit) {
-        return "♥♦".contains(suit) ? Ansi.Color.RED : Ansi.Color.BLACK;
-    }
     private String gapForRankSize() {
         return rank.equals("10") ? "" : " ";
     }
