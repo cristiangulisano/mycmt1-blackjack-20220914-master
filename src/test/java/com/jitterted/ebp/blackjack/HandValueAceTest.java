@@ -2,32 +2,40 @@ package com.jitterted.ebp.blackjack;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.*;
 
 public class HandValueAceTest {
 
-    private static final Suit DUMMY_SUIT = Suit.HEARTS;
+
     @Test
     public void handWithOneAceTwoCardsIsValuedAt11() throws Exception {
-        Game game = new Game();
-        List<Card> cards = List.of(new Card(DUMMY_SUIT, "A"),
-                                   new Card(DUMMY_SUIT, "5"));
+        Hand hand = HandFactory.createHandWithRankOf("A", "5");
 
-        assertThat(game.handValueOf(cards))
+        assertThat(hand.value())
                 .isEqualTo(11 + 5);
     }
 
     @Test
-    public void handWithOneAceAndOtherCardsEqualTo11IsValuedAt1() throws Exception {
-        Game game = new Game();
-        List<Card> cards = List.of(new Card(DUMMY_SUIT, "A"),
-                                   new Card(DUMMY_SUIT, "8"),
-                                   new Card(DUMMY_SUIT, "3"));
+    public void handWithOneAceAndOtherCardsEqualTo11IsValuedAt11() throws Exception {
+        Hand hand = HandFactory.createHandWithRankOf("A", "8", "3");
 
-        assertThat(game.handValueOf(cards))
+        assertThat(hand.value())
                 .isEqualTo(1 + 8 + 3);
     }
 
+    @Test
+    public void handWithOneAceAndJackEqualTo21() throws Exception {
+        Hand hand = HandFactory.createHandWithRankOf("A", "J");
+
+        assertThat(hand.value())
+                .isEqualTo(11 + 10);
+    }
+
+    @Test
+    public void handWithOneAceAndJackAndTwoEqualTo13() throws Exception {
+        Hand hand = HandFactory.createHandWithRankOf("A", "J", "2");
+
+        assertThat(hand.value())
+                .isEqualTo(1 + 10 + 2);
+    }
 }
