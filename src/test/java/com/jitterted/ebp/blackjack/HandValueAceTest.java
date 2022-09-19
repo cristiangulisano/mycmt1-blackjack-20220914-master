@@ -24,7 +24,7 @@ public class HandValueAceTest {
     }
 
     @Test
-    public void handWithOneAceAndJackEqualTo21() throws Exception {
+    public void handWithOneAceAndJackEqualTo21AceIsValuedAt11() throws Exception {
         Hand hand = HandFactory.createHandWithRankOf("A", "J");
 
         assertThat(hand.value())
@@ -32,7 +32,7 @@ public class HandValueAceTest {
     }
 
     @Test
-    public void handWithOneAceAndJackAndTwoEqualTo13() throws Exception {
+    public void handWithOneAceAndJackAndTwoEqualTo13AceIsValuedAt1() throws Exception {
         Hand hand = HandFactory.createHandWithRankOf("A", "J", "2");
 
         assertThat(hand.value())
