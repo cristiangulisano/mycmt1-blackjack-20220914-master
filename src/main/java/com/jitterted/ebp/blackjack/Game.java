@@ -75,13 +75,14 @@ public class Game {
         boolean playerBusted = false;
         playerBusted = playerPlays(playerBusted);
         dealerPlays(playerBusted);
-        gameResult(playerBusted);
+        displayGameState();
+        GameOutcome gameOutcome = determineOutcome(playerBusted);
+        playerBalance += gameOutcome.payoffAmount(playerCurrentBet);
     }
 
     private boolean playerPlays(boolean playerBusted) {
         // get Player's decision: hit until they stand, then they're done (or they go bust)
         while (!playerBusted) {
-            displayGameState();
             String playerChoice = inputFromPlayer().toLowerCase();
             if (playerStands(playerChoice)) {
                 break;
@@ -108,17 +109,22 @@ public class Game {
         return playerChoice.startsWith("s");
     }
 
-    private void gameResult(boolean playerBusted) {
+    private GameOutcome determineOutcome(boolean playerBusted) {
         if (playerBusted) {
             System.out.println("You Busted, so you lose.  💸");
+            return GameOutcome.PLAYER_LOSES;
         } else if (dealerHand.isBusted()) {
             System.out.println("Dealer went BUST, Player wins! Yay for you!! 💵");
+            return GameOutcome.PLAYER_WINS;
         } else if (playerHand.beats(dealerHand)) {
             System.out.println("You beat the Dealer! 💵");
+            return GameOutcome.PLAYER_WINS;
         } else if (dealerHand.pushes(playerHand)) {
             System.out.println("Push: You tie with the Dealer. 💸");
+            return GameOutcome.PLAYER_PUSHES;
         } else {
             System.out.println("You lost to the Dealer. 💸");
+            return GameOutcome.PLAYER_LOSES;
         }
     }
 
@@ -129,7 +135,6 @@ public class Game {
                 dealerHand.addCard(deck.draw());;
             }
         }
-
         displayFinalGameState();
     }
 
