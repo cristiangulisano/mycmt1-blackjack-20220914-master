@@ -14,6 +14,7 @@ public class Game {
     private final Hand playerHand = new Hand();
 
     private int playerBalance = 0;
+    private int playerCurrentBet = 0;
 
     public static void main(String[] args) {
         initializeScreen();
@@ -188,10 +189,23 @@ public class Game {
     }
 
     public void playerBets(int amount) {
+        playerCurrentBet = amount;
         playerBalance -= amount;
     }
 
     public void playerWins() {
         playerBalance += playerBalance * 2;
+    }
+
+    public void playerLoses() {
+    }
+
+    public void playerPushes() {
+        playerBalance += playerCurrentBet;
+        playerCurrentBet = 0;
+    }
+
+    public void playerWinsWithBJ() {
+        playerBalance += playerBalance * 2.5;
     }
 }
